@@ -355,9 +355,9 @@
 
 * 也就是說, 即便你定義的函數只接受兩個參數,在調用這個函數時也未必一定要傳遞兩個參數。可以傳遞一個、三個甚至不傳遞參數, 而解析器永遠不會有什麼怨言。
 
-* 原因是 ECMAScript 中的參數在內部是用一個數組來表示的。函數接收到的始終都是這個數組，而不關心數組中包含哪些參數（如果有參數的話）。如果這個數組中不包含任何元素，無所謂；如果包含多個元素，也沒有問題。實際上，在函數體內可以通過 __arguments__ 對象來訪問這個參數數組，從而獲取傳遞給函數的每一個參數。
+* 原因是 ECMAScript 中的參數在內部是用一個陣列來表示的。函數接收到的始終都是這個陣列，而不關心陣列中包含哪些參數（如果有參數的話）。如果這個陣列中不包含任何元素，無所謂；如果包含多個元素，也沒有問題。實際上，在函數體內可以通過 __arguments__ 對象來訪問這個參數陣列，從而獲取傳遞給函數的每一個參數。
 
-* __arguments__ 對像只是與數組類似（它並不是 Array 的實例），因為可以使用方括號語法訪問它的每一個元素（即第一個元素是 __arguments[0]__，第二個元素是 __argumetns[1]__，以此類推），使用 __length__ 屬性來確定傳遞進來多少個參數。
+* __arguments__ 對像只是與陣列類似（它並不是 Array 的實例），因為可以使用方括號語法訪問它的每一個元素（即第一個元素是 __arguments[0]__，第二個元素是 __argumetns[1]__，以此類推），使用 __length__ 屬性來確定傳遞進來多少個參數。
 
 		function sayHi() { 
     		alert("Hello " + arguments[0] + "," + arguments[1]); 
@@ -564,48 +564,394 @@ JavaScript 没有块级作用域经常会导致理解上的困惑。在其他类
 	var colors = new Array(20); 
 	var colors = new Array("red", "blue", "green");
 
-给构造函数传递一个值也可以创建数组。但这时候问题就复杂一点了，因为如果传递的__是数值，则会按照该数值创建包含给定项数的数组__；而如果传递的是__其他类型的参数，则会创建包含那个值的只有一项的数组__。下面就两个例子： 
+给构造函数传递一个值也可以创建陣列。但这时候问题就复杂一点了，因为如果传递的__是数值，则会按照该数值创建包含给定项数的陣列__；而如果传递的是__其他类型的参数，则会创建包含那个值的只有一项的陣列__。下面就两个例子： 
  
-	var colors = new Array(3);        // 创建一个包含 3 项的数组 
-	var names = new Array("Greg");      // 创建一个包含 1 项，即字符串"Greg"的数组
+	var colors = new Array(3);        // 创建一个包含 3 项的陣列 
+	var names = new Array("Greg");      // 创建一个包含 1 项，即字符串"Greg"的陣列
 
 在使用 Array 构造函数时也可以省略 new 操作符。如下面的例子所示，省略 new 操作符的结果相同： 
  
-	var colors = Array(3);         // 创建一个包含 3 项的数组 
-	var names = Array("Greg");     // 创建一个包含 1 项，即字符串"Greg"的数组  
+	var colors = Array(3);         // 创建一个包含 3 项的陣列 
+	var names = Array("Greg");     // 创建一个包含 1 项，即字符串"Greg"的陣列  
 
-建数组的第二种基本方式是使用数组字面量表示法。数组字面量由一对包含数组项的方括号表示，多个数组项之间以逗号隔开
+建陣列的第二种基本方式是使用陣列字面量表示法。陣列字面量由一对包含陣列项的方括号表示，多个陣列项之间以逗号隔开
 	
-	var colors = ["red", "blue", "green"];  // 创建一个包含 3 个字符串的数组 
-	var names = [];                       // 创建一个空数组 
-	var values = [1,2,];                   // 不要这样！这样会创建一个包含 2 或 3 项的数组 
-	var options = [,,,,,];                 // 不要这样！这样会创建一个包含 5 或 6 项的数组 
+	var colors = ["red", "blue", "green"];  // 创建一个包含 3 个字符串的陣列 
+	var names = [];                       // 创建一个空陣列 
+	var values = [1,2,];                   // 不要这样！这样会创建一个包含 2 或 3 项的陣列 
+	var options = [,,,,,];                 // 不要这样！这样会创建一个包含 5 或 6 项的陣列 
 
 在像这种省略值的情况下，每一项都将获得 undefined 值；这个结果与调用 Array 构造函数时传递项数在逻辑上是相同的。但是由于 IE 的实现与其他浏览器不一致我们强烈建议不要使用这种语法(第二種但是省略語法, 一些瀏覽器會有bug)
 
 讀取:
 	
-	var colors = ["red", "blue", "green"];  // 定义一个字符串数组 
+	var colors = ["red", "blue", "green"];  // 定义一个字符串陣列 
 	alert(colors[0]);                     // 显示第一项 
 	colors[2] = "black";                   // 修改第三项 
 	colors[3] = "brown";                   // 新增第四项
 
-数组的 length 属性很有特点——它不是只读的。因此，通过设置这个属性，可以从数组的末尾移除项或向数组中添加新项。请看下面的例子： 
+陣列的 length 属性很有特点——它不是只读的。因此，通过设置这个属性，可以从陣列的末尾移除项或向陣列中添加新项。请看下面的例子： 
  
-	var colors = ["red", "blue", "green"];     // 创建一个包含 3 个字符串的数组 
+	var colors = ["red", "blue", "green"];     // 创建一个包含 3 个字符串的陣列 
 	colors.length = 2; 
 	alert(colors[2]);                 //undefined 
 
-利用 length 属性也可以方便地在数组末尾添加新项，如下所示：
+利用 length 属性也可以方便地在陣列末尾添加新项，如下所示：
 
-	var colors = ["red", "blue", "green"];     // 创建一个包含 3 个字符串的数组 
+	var colors = ["red", "blue", "green"];     // 创建一个包含 3 个字符串的陣列 
 	colors[colors.length] = "black";            //（在位置 3）添加一种颜色 
 	colors[colors.length] = "brown";            //（在位置 4）再添加一种颜色 
 
 插入99
 
-	var colors = ["red", "blue", "green"];      // 创建一个包含 3 个字符串的数组 
+	var colors = ["red", "blue", "green"];      // 创建一个包含 3 个字符串的陣列 
 	colors[99] = "black";                     // （在位置 99）添加一种颜色 
 	alert(colors.length); // 100
 
- 在这个例子中，我们向 colors 数组的位置 99 插入了一个值，结果数组新长度（length）就是 100（99+1）。而位置 3 到位置 98 实际上都是不存在的，所以访问它们都将返回 __undefined__。
+ 在这个例子中，我们向 colors 陣列的位置 99 插入了一个值，结果陣列新长度（length）就是 100（99+1）。而位置 3 到位置 98 实际上都是不存在的，所以访问它们都将返回 __undefined__。
+
+###檢測陣列
+
+自从 ECMAScript 3 做出规定以后，就出现了确定某个对象是不是数组的经典问题。对于一个网页,或者一个全局作用域而言，使用 instanceof 操作符就能得到满意的结果： 
+	 
+	if (value instanceof Array){  
+	    //对数组执行某些操作 
+	} 
+ 
+instanceof 操作符的问题在于，它假定只有一个全局执行环境。如果网页中包含多个框架，那实际上就存在两个以上不同的全局执行环境，从而存在两个以上不同版本的 Array 构造函数。如果你从一个框架向另一个框架传入一个数组，那么传入的数组与在第二个框架中原生创建的数组分别具有各自不同的构造函数。
+
+为了解决这个问题，ECMAScript 5 新增了 __Array.isArray()__方法。这个方法的目的是最终确定某个值到底是不是数组，而不管它是在哪个全局执行环境中创建的。这个方法的用法如下。 
+ 
+	if (Array.isArray(value)){ 
+	    //对数组执行某些操作 
+	} 
+ 
+支持 Array.isArray()方法的浏览器有 IE9+、Firefox 4+、Safari 5+、Opera 10.5+和 Chrome
+
+###轉換方法
+
+所有对象都具有 toLocaleString()、toString()和 valueOf()方法。其中，调用数组的 toString()方法会返回__由数组中每个值的字符串形式拼接而成的一个以逗号分隔的字符串__。而调用__valueOf()返回的还是数组__。实际上，为了创建这个字符串会调用数组每一项的 toString()方法。来看下面这个例子。 
+ 
+	var colors = ["red", "blue", "green"];     // 创建一个包含 3 个字符串的数组 
+	alert(colors.toString());     // red,blue,green 
+	alert(colors.valueOf());      // red,blue,green 
+	alert(colors);                // red,blue,green 
+
+呼叫toLocaleString寫法:
+
+	var person1 = { 
+	    toLocaleString : function () { 
+	        return "Nikolaos"; 
+	    }, 
+	     
+	    toString : function() { 
+	        return "Nicholas"; 
+	    } 
+	}; 
+	 
+	var person2 = { 
+	    toLocaleString : function () { 
+	        return "Grigorios"; 
+	    }, 
+	     
+	    toString : function() { 
+	        return "Greg"; 
+	    } 
+	}; 
+	 
+	var people = [person1, person2]; 
+	alert(people);                        //Nicholas,Greg 
+	alert(people.toString());               //Nicholas,Greg 
+	alert(people.toLocaleString());         //Nikolaos,Grigorios 
+
+
+join()方法只接收一个参数，即用作分隔符的字符串，然后返回包含所有数组项的字符串。请看下面的例子： 
+ 
+	var colors = ["red", "green", "blue"]; 
+	alert(colors.join(","));       //red,green,blue 
+	alert(colors.join("||"));      //red||green||blue 
+
+如果不给 join()方法传入任何值，或者给它传入 undefined，则使用逗号作为分隔符
+
+如果数组中的某一项的值是 null 或者 undefined，那么该值在 join()、toLocaleString()、toString()和 valueOf()方法返回的结果中以空字符串表示。
+
+###Stack Methods
+数组可以表现得就像栈一样，后者是一种可以限制插入和删除项的数据结构。栈是一种 LIFO（Last-In-First-Out，
+后进先出）的数据结构，也就是最新添加的项最早被移除。而栈中项的插入（叫做推入）和移除（叫做弹出），只发生在一个位置——栈的顶部。ECMAScript 为数组专门提供了 push()和 pop()方法，以便实现类似栈的行为。
+
+	var colors = new Array();                   // 创建一个数组 
+	var count = colors.push("red", "green");    // 推入两项 
+	alert(count);    //2 
+	 
+	count = colors.push("black");               // 推入另一项 
+	alert(count);     //3 
+	 
+	var item = colors.pop();                   // 取得最后一项 
+	alert(item);      //"black" 
+	alert(colors.length);   //2 
+	
+	var colors = ["red", "blue"]; 
+	colors.push("brown");               // 添加另一项 
+	colors[3] = "black";                // 添加一项 
+	alert(colors.length);    // 4 
+	 
+	var item = colors.pop();            // 取得最后一项 
+	alert(item);  //"black" 
+
+### Queue Methods
+队列数据结构的访问规则是 FIFO（First-In-First-Out,先进先出）
+push() / shift() / unshift()
+
+	var colors = new Array();                   //创建一个数组 
+	var count = colors.push("red", "green");    //推入两项 
+	alert(count);    //2 
+	 
+	count = colors.push("black");               //推入另一项 
+	alert(count);     //3 
+	 
+	var item = colors.shift();                  //取得第一项 
+	alert(item);      //"red" 
+	alert(colors.length); //2 
+ 
+注意pop()是移除陣列最後一項
+
+	count = colors.unshift("black");                 //推入另一项 
+	alert(count);   //3 
+	 
+	var item = colors.pop();                        //取得最后一项 
+	alert(item);    //"green" 
+	alert(colors.length); //2 
+
+这个例子创建了一个数组并使用 unshift()方法先后推入了 3 个值。首先是"red"和"green"，然后是"black"，数组中各项的顺序为"black"、"red"、"green"。在调用 pop()方法时，移除并返回的是最后一项，即"green"。
+
+### Reordering Methods
+
+reverse() and sort().
+sort()方法可以接收一个比较函数作为参数，以便我们指定哪个值位于哪个值的前面。
+
+	function compare(value1, value2) { 
+	    if (value1 < value2) { 
+	        return -1; 
+	    } else if (value1 > value2) { 
+	        return 1; 
+	    } else { 
+	        return 0; 
+	    } 
+	} 
+
+	var values = [0, 1, 5, 10, 15]; 
+	values.sort(compare); 
+	alert(values);   //0,1,5,10,15 
+
+reverse()和 sort()方法的返回值是经过排序之后的陣列
+
+
+### 操作方法 Manipulation Methods
+
+concat()方法可以基于当前数组中的所有项创建一个新数组。具体来说，这个方法会先创建当前数组一个副本，然后将接收到的参数添加到这个副本的末尾，最后返回新构建的数组。在没有给 concat()方法传递参数的情况下，它只是复制当前数组并返回副本。如果传递给 concat()方法的是一或多个数组，则该方法会将这些数组中的每一项都添加到结果数组中。如果传递的值不是数组，这些值就会被简单地添加到结果数组的末尾。
+
+	var colors = ["red", "green", "blue"]; 
+	var colors2 = colors.concat("yellow", ["black", "brown"]); 
+	 
+	alert(colors);     //red,green,blue         
+	alert(colors2);    //red,green,blue,yellow,black,brown 
+
+slice()，它能够基于当前数组中的一或多个项创建一个新数组。slice()方法可以接受一或两个参数，即要返回项的起始和结束位置。在只有一个参数的情况下，slice()方法返回从该参数指定位置开始到当前数组末尾的所有项。如果有两个参数，该方法返回起始和结束位置之间的项——但不包括结束位置的项。注意，slice()方法不会影响原始数组
+
+	var colors = ["red", "green", "blue", "yellow", "purple"]; 
+	var colors2 = colors.slice(1); 
+	var colors3 = colors.slice(1,4); 
+	 
+	alert(colors2);   //green,blue,yellow,purple 
+	alert(colors3);   //green,blue,yellow 
+
+
+splice()方法，这个方法恐怕要算是最强大的数组方法了，它有很多种用法。
+splice()的主要用途是向数组的中部插入项，但使用这种方法的方式则有如下 3 种。 
+
+* 删除：可以删除任意数量的项，只需指定 2 个参数：要删除的第一项的位置和要删除的项数。例如，splice(0,2)会删除数组中的前两项。 
+* 插入：可以向指定位置插入任意数量的项，只需提供 3 个参数：起始位置、0（要删除的项数和要插入的项。如果要插入多个项，可以再传入第四、第五，以至任意多个项。例如，splice(2,0,"red","green")会从当前数组的位置 2 开始插入字符串"red"和"green"。 
+* 替换：可以向指定位置插入任意数量的项，且同时删除任意数量的项，只需指定 3 个参数：起始位置、要删除的项数和要插入的任意数量的项。插入的项数不必与删除的项数相等。例如，splice (2,1,"red","green")会删除当前数组位置 2 的项，然后再从位置 2 开始插入字符串"red"和"green"。 
+
+splice()方法始终都会返回一个数组，该数组中包含从原始数组中删除的项（如果没有删除任何项，则返回一个空数组）。
+
+
+### 位置方法 Location Methods 
+
+indexOf()和 lastIndexOf()。这两个方法都接收两个参数：要查找的项和（可选的）表示查找起点位置的索引。其中，indexOf()方法从数组的开头（位置 0）开始向后查找，lastIndexOf()方法则从数组的末尾开始向前查找
+
+这两个方法都返回要查找的项在数组中的位置，或者在没找到的情况下返回-1
+
+在比较第一个参数与数组中的每一项时，会使用全等操作符；也就是说，要求查找的项必须严格相等
+
+
+### 迭代方法 Iterative Methods
+
+ECMAScript 5 为数组定义了 5 个迭代方法。每个方法都接收两个参数：要在每一项上运行的函数和（可选的）运行该函数的作用域对象——影响 this 的值。
+
+传入这些方法中的函数会接收三个参数：数组项的值、该项在数组中的位置和数组对象本身。根据使用的方法不同，这个函数执行后的返回值可能会也可能不会影响方法的返回值。以下是这 5 个迭代方法的作用。
+ 
+* every()：对数组中的每一项运行给定函数，如果该函数对每一项都返回 true，则返回true。 
+* filter()：对数组中的每一项运行给定函数，返回该函数会返回 true 的项组成的数组。 
+* forEach()：对数组中的每一项运行给定函数。这个方法没有返回值。 
+* map()：对数组中的每一项运行给定函数，返回每次函数调用的结果组成的数组。 
+* some()：对数组中的每一项运行给定函数，如果该函数对任一项返回 true，则返回 true。
+ 
+以上方法都不会修改数组中的包含的值。 
+在这些方法中，最相似的是 every()和 some()，它们都用于查询数组中的项是否满足某个条件。
+
+* 对 every()来说，传入的函数必须对每一项都返回 true，这个方法才返回 true；否则，它就返回false。
+* 而 some()方法则是只要传入的函数对数组中的某一项返回 true，就会返回 true。
+
+
+		var numbers = [1,2,3,4,5,4,3,2,1]; 
+		 
+		var everyResult = numbers.every(function(item, index, array){ 
+		    return (item > 2);  
+		}); 
+		 
+		alert(everyResult);     //false 
+		 
+		var someResult = numbers.some(function(item, index, array){ 
+		    return (item > 2); 
+		}); 
+		 
+		alert(someResult);      //true 
+
+
+
+filter()函数，它利用指定的函数确定是否在返回的数组中包含某一项。例如，要
+返回一个所有数值都大于 2 的数组，可以使用以下代码。 
+	var numbers = [1,2,3,4,5,4,3,2,1]; 
+	 
+	var filterResult = numbers.filter(function(item, index, array){ 
+	    return (item > 2); 
+	}); 
+	 
+	alert(filterResult);    //[3,4,5,4,3] 
+
+
+map()也返回一个数组，而这个数组的每一项都是在原始数组中的对应项上运行传入函数的结果。例如，可以给数组中的每一项乘以 2，然后返回这些乘积组成的数组，如下所示。 
+
+	var numbers = [1,2,3,4,5,4,3,2,1]; 
+	 
+	var mapResult = numbers.map(function(item, index, array){ 
+	    return item * 2; 
+	}); 
+	 
+	alert(mapResult);  //[2,4,6,8,10,8,6,4,2] 
+
+forEach()，它只是对数组中的每一项运行传入的函数。这个方法没有返回值
+本质上与使用 for 循环迭代数组一样。来看一个例子。 
+
+	var numbers = [1,2,3,4,5,4,3,2,1];
+	numbers.forEach(function(item, index, array){ 
+	    //执行某些操作  
+	}); 
+
+
+### 歸併方法 Reduction Methods
+
+ECMAScript  5 还新增了两个归并数组的方法：reduce()和 reduceRight()。这两个方法都会迭代数组的所有项，然后构建一个最终返回的值。其中，reduce()方法从数组的第一项开始，逐个遍历到最后。而 reduceRight()则从数组的最后一项开始，向前遍历到第一项。
+
+这两个方法都接收两个参数：一个在每一项上调用的函数和（可选的）作为归并基础的初始值. 
+传给 reduce()和 reduceRight()的函数接收 4 个参数：前一个值、当前值、项的索引和数组对象。这个函数返回的任何值都会作为第一个参数自动传给下一项。第一次迭代发生在数组的第二项上，因此第一个参数是数组的第一项，第二个参数就是数组的第二项。
+
+使用 reduce()方法可以执行求数组中所有值之和的操作，比如： 
+
+	var values = [1,2,3,4,5]; 
+	var sum = values.reduce(function(prev, cur, index, array){ 
+	    return prev + cur;  
+	}); 
+	alert(sum); //15 
+ 
+第一次执行回调函数，prev 是 1，cur 是 2。第二次，prev 是 3（1 加 2 的结果），cur 是 3（数组的第三项）。这个过程会持续到把数组中的每一项都访问一遍，最后返回结果
+
+
+### Date Type
+
+var now = new Date();
+
+ECMAScript 5 添加了 Data.now()方法，返回表示调用这个方法时的日期和时间的毫秒数。这个方法简化了使用 Data 对象分析代码的工作。例如： 
+ 
+	//取得开始时间 
+	var start = Date.now(); 
+	 
+	//调用函数 
+	doSomething(); 
+	 
+	//取得停止时间 
+	var stop = Date.now(), 
+	    result = stop – start; 
+ 
+支持 Data.now()方法的浏览器包括 IE9+、Firefox  3+、Safari  3+、Opera  10.5 和 Chrome。在不支持它的浏览器中，__使用+操作符把 Data 对象转换成字符串__，也可以达到同样的目的。 
+ 
+	//取得开始时间 
+	var start = +new Date(); 
+	 
+	//调用函数 
+	doSomething(); 
+	//取得停止时间 
+	var stop = +new Date(), 
+	result = stop - start; 
+
+
+### Date-Formatting Methods
+
+Date 类型还有一些专门用于将日期格式化为字符串的方法，这些方法如下。
+ 
+* toDateString()——以特定于实现的格式显示星期几、月、日和年； 
+* toTimeString()——以特定于实现的格式显示时、分、秒和时区； 
+* toLocaleDateString()——以特定于地区的格式显示星期几、月、日和年； 
+* toLocaleTimeString()——以特定于实现的格式显示时、分、秒； 
+* toUTCString()——以特定于实现的格式完整的 UTC 日期。 
+
+与 toLocaleString()和 toString()方法一样，以上这些字符串格式方法的输出也是因浏览器而异的，因此没有哪一个方法能够用来在用户界面中显示一致的日期信息。
+
+
+### 日期/时间组件方法 Date/Time Component Methods
+
+- getTime()  返回表示日期的毫秒数；与valueOf()方法返回的值相同 
+- setTime(毫秒)  以毫秒数设置日期，会改变整个日期 
+- getFullYear()  取得4位数的年份（如2007而非仅07） 
+- getUTCFullYear()  返回UTC日期的4位数年份 
+- setFullYear(年)  设置日期的年份。传入的年份值必须是4位数字（如2007而非仅07） 
+- setUTCFullYear(年)  设置UTC日期的年份。传入的年份值必须是4位数字（如2007而非仅07） 
+- getMonth()  返回日期中的月份，其中0表示一月，11表示十二月 
+- getUTCMonth()  返回UTC日期中的月份，其中0表示一月，11表示十二月 
+- setMonth(月)  设置日期的月份。传入的月份值必须大于0，超过11则增加年份 
+- setUTCMonth(月)  设置UTC日期的月份。传入的月份值必须大于0，超过11则增加年份 
+- getDate()  返回日期月份中的天数（1到31） 
+- getUTCDate()  返回UTC日期月份中的天数（1到31） 
+- setDate(日)  设置日期月份中的天数。如果传入的值超过了该月中应有的天数，则增加月份 
+- setUTCDate(日)  设置UTC日期月份中的天数。如果传入的值超过了该月中应有的天数，则增加月份 
+- getDay()  返回日期中星期的星期几（其中0表示星期日，6表示星期六） 
+- getUTCDay()  返回UTC日期中星期的星期几（其中0表示星期日，6表示星期六） 
+- getHours()  返回日期中的小时数（0到23） 
+- getUTCHours()  返回UTC日期中的小时数（0到23） 
+- setHours(时)  设置日期中的小时数。传入的值超过了23则增加月份中的天数 
+- setUTCHours(时)  设置UTC日期中的小时数。传入的值超过了23则增加月份中的天数 
+- getMinutes()  返回日期中的分钟数（0到59） 
+- getUTCMinutes()  返回UTC日期中的分钟数（0到59） 
+- setMinutes(分)  设置日期中的分钟数。传入的值超过59则增加小时数 
+- setUTCMinutes(分)  设置UTC日期中的分钟数。传入的值超过59则增加小时数 
+- getSeconds()  返回日期中的秒数（0到59） 
+- getUTCSeconds()  返回UTC日期中的秒数（0到59） 
+- setSeconds(秒)  设置日期中的秒数。传入的值超过了59会增加分钟数 
+- setUTCSeconds(秒)  设置UTC日期中的秒数。传入的值超过了59会增加分钟数 
+- getMilliseconds()  返回日期中的毫秒数 
+- getUTCMilliseconds()  返回UTC日期中的毫秒数 
+- setMilliseconds(毫秒)  设置日期中的毫秒数 
+- setUTCMilliseconds(毫秒)  设置UTC日期中的毫秒数 
+- getTimezoneOffset()  返回本地时间与UTC时间相差的分钟数。例如，美国东部标准时间返回300。在某地进入夏令时的情况下，这个值会有所变化
+
+
+### RegExp Type
+
+先跳過
+
+
+### Function Type (重頭戲)
+
+
+
