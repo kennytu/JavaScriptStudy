@@ -551,3 +551,61 @@ JavaScript 没有块级作用域经常会导致理解上的困惑。在其他类
  
 	var propertyName = "name"; 
 	alert(person[propertyName]);   //"Nicholas" 
+
+	person["first name"] = "Nicholas"; 
+ 
+由于"first name"中包含一个空格，所以不能使用点表示法来访问它。然而，__属性名中是可以包含非字母非数字的__，这时候就可以__使用方括号表示法来访问它们__。
+
+通常，除非必须使用变量来访问属性，否则我们建议使用点表示法。
+
+### Array Type 
+
+	var colors = new Array(); 
+	var colors = new Array(20); 
+	var colors = new Array("red", "blue", "green");
+
+给构造函数传递一个值也可以创建数组。但这时候问题就复杂一点了，因为如果传递的__是数值，则会按照该数值创建包含给定项数的数组__；而如果传递的是__其他类型的参数，则会创建包含那个值的只有一项的数组__。下面就两个例子： 
+ 
+	var colors = new Array(3);        // 创建一个包含 3 项的数组 
+	var names = new Array("Greg");      // 创建一个包含 1 项，即字符串"Greg"的数组
+
+在使用 Array 构造函数时也可以省略 new 操作符。如下面的例子所示，省略 new 操作符的结果相同： 
+ 
+	var colors = Array(3);         // 创建一个包含 3 项的数组 
+	var names = Array("Greg");     // 创建一个包含 1 项，即字符串"Greg"的数组  
+
+建数组的第二种基本方式是使用数组字面量表示法。数组字面量由一对包含数组项的方括号表示，多个数组项之间以逗号隔开
+	
+	var colors = ["red", "blue", "green"];  // 创建一个包含 3 个字符串的数组 
+	var names = [];                       // 创建一个空数组 
+	var values = [1,2,];                   // 不要这样！这样会创建一个包含 2 或 3 项的数组 
+	var options = [,,,,,];                 // 不要这样！这样会创建一个包含 5 或 6 项的数组 
+
+在像这种省略值的情况下，每一项都将获得 undefined 值；这个结果与调用 Array 构造函数时传递项数在逻辑上是相同的。但是由于 IE 的实现与其他浏览器不一致我们强烈建议不要使用这种语法(第二種但是省略語法, 一些瀏覽器會有bug)
+
+讀取:
+	
+	var colors = ["red", "blue", "green"];  // 定义一个字符串数组 
+	alert(colors[0]);                     // 显示第一项 
+	colors[2] = "black";                   // 修改第三项 
+	colors[3] = "brown";                   // 新增第四项
+
+数组的 length 属性很有特点——它不是只读的。因此，通过设置这个属性，可以从数组的末尾移除项或向数组中添加新项。请看下面的例子： 
+ 
+	var colors = ["red", "blue", "green"];     // 创建一个包含 3 个字符串的数组 
+	colors.length = 2; 
+	alert(colors[2]);                 //undefined 
+
+利用 length 属性也可以方便地在数组末尾添加新项，如下所示：
+
+	var colors = ["red", "blue", "green"];     // 创建一个包含 3 个字符串的数组 
+	colors[colors.length] = "black";            //（在位置 3）添加一种颜色 
+	colors[colors.length] = "brown";            //（在位置 4）再添加一种颜色 
+
+插入99
+
+	var colors = ["red", "blue", "green"];      // 创建一个包含 3 个字符串的数组 
+	colors[99] = "black";                     // （在位置 99）添加一种颜色 
+	alert(colors.length); // 100
+
+ 在这个例子中，我们向 colors 数组的位置 99 插入了一个值，结果数组新长度（length）就是 100（99+1）。而位置 3 到位置 98 实际上都是不存在的，所以访问它们都将返回 __undefined__。
