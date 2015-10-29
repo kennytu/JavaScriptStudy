@@ -398,4 +398,156 @@
 
 * ECMAScript中的__所有參數傳遞的都是值__，不可能通過引用傳遞參數。也就是說都是call by value, 不是call by reference.
 
-* 
+* ECMAScript 函數不能像傳統意義上那樣實現重載(OverLoading)
+* 兩個相同名字的function, 後面的會覆寫前一個的定義
+
+
+##變數, 作用域和內存問題##
+
+* ECMAScript 中所有函数的参数都是按值传递的
+* 有很多开发人员错误地认为：在局部作用域中修改的对象会在全局作用域中反映出来，就说明
+参数是按引用传递的。为了证明对象是按值传递的, 我们再看一看下面这个经过修改的例子：
+
+		function setName(obj) { 
+    		obj.name = "Nicholas"; 
+    		obj = new Object(); 
+    		obj.name = "Greg"; 
+		} 
+ 
+		var person = new Object(); 
+		setName(person); 
+		alert(person.name);    //"Nicholas"
+
+ 
+###檢測類型
+* typeof 操作符是确定一个变量是字符串、数值、布尔值，还是 undefined 的最佳工具。如果变
+量的值是一个对象或 null，则 typeof 操作符会像下面例子中所示的那样返回"object"
+
+* 我们并不是想知道某个值是对象，而是想知道它是什么类型的对象。为此，ECMAScript 提供了 instanceof 操作符，其语法如下所示： 
+ 
+
+		result = variable instanceof constructor 
+
+		alert(person instanceof Object);  // 变量 person 是 Object 吗？ 
+		alert(colors instanceof Array);   // 变量 colors 是 Array 吗？ 
+		alert(pattern instanceof RegExp);   // 变量 pattern 是 RegExp 吗？
+
+ 
+* 使用 typeof 操作符檢測函數時，該操作符會返回 "function"。在 Safari 5 及之前版本和 Chrome 7 及之前版本中使用 typeof 檢測正則表達式時，由於規範的原因，這個操作符也返回 "function"。 ECMA-262 規定任何在內部實現 [[Call]] 方法的對像都應該在應用 typeof 操作符時返回 "function"。由於上述瀏覽器中的正則表達式也實現了這個方法，因此對正則表達式應用 typeof 會返回 "function"。在
+IE 和 Firefox 中，對正則表達式應用 typeof 會返回 "object"。
+
+###執行環境以及作用域
+* 在 Web 瀏覽器中，全局執行環境被認為是 window 對象，因此所有全局變量和函數都是作為 window 對象的屬性和方法創建的。某個執行環境中的所有代碼執行完畢後，該環境被銷毀，保存在其中的所有變量和函數定義也隨之銷毀（全局執行環境直到應用程序退出——例如關閉網頁或瀏覽器——時才會被銷毀）。
+
+* 标识符解析是沿着作用域链一级一级地搜索标识符的过程。搜索过程始终从作用域链的前端开始，
+然后逐级地向后回溯，直至找到标识符为止（如果找不到标识符，通常会导致错误发生）
+
+* 内部环境可以通过作用域链访问所有的外部环境，但外部环境不能访问内部环境中的任何变量和函数。这些环境之间的联系是线性、有次序的。每个环境都可以向上搜索作用域链，以查询变量和函数名；但任何环境都不能通过向下搜索作用域链而进入另一个执行环境。
+
+#### 沒有塊級的作用域
+JavaScript 没有块级作用域经常会导致理解上的困惑。在其他类 C 的语言中，由花括号封闭的代码块都有自己的作用域（如果用 ECMAScript 的话来讲，就是它们自己的执行环境），因而支持根据条件来定义变量。
+
+	if (true) { 
+	    var color = "blue"; 
+	} 
+	 
+	alert(color);    //"blue" 
+ 
+这里是在一个 if 语句中定义了变量 color。如果是在 C、C++或 Java 中，color 会在 if 语句执行完毕后被销毁。但在 JavaScript 中，if 语句中的变量声明会将变量添加到当前的执行环境（在这里是全局环境）中。在使用 for 语句时尤其要牢记这一差异，例如： 
+ 
+	for (var i=0; i < 10; i++){ 
+	    doSomething(i); 
+	} 
+	 
+	alert(i);      //10 
+ 
+对于有块级作用域的语言来说，for 语句初始化变量的表达式所定义的变量，只会存在于循环的环境之中。而对于 JavaScript 来说，由 for 语句创建的变量 i 即使在 for 循环执行结束后，也依旧会存在
+于循环外部的执行环境中。 
+
+使用 var 声明的变量会自动被添加到最接近的环境中。在函数内部，最接近的环境就是函数的局部环境；在 with 语句中，最接近的环境是函数环境。如果初始化变量时没有使用 var 声明，该变量会自动被添加到全局环境
+
+在编写 JavaScript 代码的过程中，不声明而直接初始化变量是一个常见的错误做法，因为这样可能会导致意外。我们建议在初始化变量之前，一定要先声明，这样就可以避免类似问题。在严格模式下，初始化未经声明的变量会导致错误。 
+
+###管理內存
+
+确保占用最少的内存可以让页面获得更好的性能。而优化内存占用的最佳方式，就是为执行中的代码只保存必要的数据。一旦数据不再有用，最好通过将其值设置为 null 来释放其引用——这个做法叫做解除引用（dereferencing）。这一做法适用于大多数全局变量和全局对象的属性。局部变量会在它们离开执行环境时自动被解除引用
+
+
+##引用類型 (Reference Type)
+
+引用類型的值（對象）是引用類型的一個實例。在 ECMAScript 中，引用類型是一種數據結構，用於將數據和功能組織在一起。它也常被稱為類，但這種稱呼並不妥當。儘管 ECMAScript從技術上講是一門面向對象的語言，但它不具備傳統的面向對象語言所支持的類和接口等基本結構。引用類型有時候也被稱為對象定義，因為它們描述的是一類對象所具有的屬性和方法。
+
+虽然引用类型与类看起来相似，但它们并不是相同的概念。为避免混淆，我們不使用类这个概念
+
+### Object Type
+
+创建 Object 实例的方式有两种。第一种是使用 new 操作符后跟 Object 构造函数
+
+	var person = new Object(); 
+	person.name = "Nicholas"; 
+	person.age = 29;
+
+
+另一种方式是使用对象字面量表示法。对象字面量是对象定义的一种简写形式，目的在于简化创建
+包含大量属性的对象的过程。
+
+	var person = { 
+	    name : "Nicholas", 
+	    age : 29 
+	}; 
+
+在使用对象字面量语法时，属性名也可以使用字符串，如下面这个例子所示。
+
+	var person = { 
+	    "name" : "Nicholas", 
+	    "age" : 29, 
+	    5 : true 
+	}; 
+
+以上的5會自動轉換成字串的"5"
+
+另外，使用对象字面量语法时，如果留空其花括号，则可以定义只包含默认属性和方法的对象，如
+下所示： 
+ 
+	var person = {};         //与 new Object()相同 
+	person.name = "Nicholas"; 
+	person.age = 29; 
+
+虽然可以使用前面介绍的任何一种方法来定义对象，但开发人员更青睐对象字面量语法，因为这种语法要求的代码量少，而且能够给人封装数据的感觉。实际上，__对象字面量也是向函数传递大量可选参数的首选方式__
+
+
+	function displayInfo(args) { 
+	    var output = ""; 
+	 
+	    if (typeof args.name == "string"){ 
+	 		output += "Name: " + args.name + "\n"; 
+	    } 
+	 
+	    if (typeof args.age == "number") { 
+	        output += "Age: " + args.age + "\n"; 
+	    } 
+	 
+	    alert(output); 
+	} 
+	 
+	displayInfo({  
+	    name: "Nicholas",  
+	    age: 29 
+	}); 
+	 
+	displayInfo({ 
+	    name: "Greg" 
+	}); 
+
+这种传递参数的模式最适合需要向函数传入大量可选参数的情形。一般来讲，命名参数虽然容易处理，但在有多个可选参数的情况下就会显示不够灵活。最好的做法是对那些必需值使用命名参数，而使用对象字面量来封装多个可选参数。
+
+一般来说，访问对象属性时使用的都是__点表示法__，这也是很多面向对象语言中通用的语法。不过，在 JavaScript 也可以使用__方括号__表示法来访问对象的属性。在__使用方括号语法__时，应该将要访问的属性以__字符串__的形式放在方括号中，
+
+	alert(person["name"]);        //"Nicholas" 
+	alert(person.name);          //"Nicholas" 
+ 
+从功能上看，这两种访问对象属性的方法没有任何区别。但方括号语法的主要优点是可以通过变量
+来访问属性，例如： 
+ 
+	var propertyName = "name"; 
+	alert(person[propertyName]);   //"Nicholas" 
